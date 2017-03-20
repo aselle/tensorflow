@@ -1,5 +1,12 @@
 # Gesture recognition with XLA AOT compilation
 
+## Where
+
+```
+git clone aselle/tensorflow
+git checkout gesture
+```
+
 ## Why?
 
 * TensorFlow libraries are large.
@@ -156,9 +163,9 @@ tf_library(
 We now add boilder plate includes
 
 ```
-\#define EIGEN_USE_THREADS
-\#define EIGEN_USE_CUSTOM_THREAD_POOL
-\#include "tensorflow/examples/xla/gesture/gesturelib.h"
+#define EIGEN_USE_THREADS
+#define EIGEN_USE_CUSTOM_THREAD_POOL
+#include "tensorflow/examples/xla/gesture/gesturelib.h"
 ```
 
 
@@ -174,6 +181,38 @@ int main(int argc,char* argv[]){
   Examples::Gesture gesture;
   gesture.set_thread_pool(&device);
   ...
+```
+
+#### Instantiate the model
+
+Now we make the Gesture model instance and bind the thread pool
+```cpp
+  Examples::Gesture gesture;
+  gesture.set_thread_pool(&device);
+  ...
+```
+
+#### Building the data set
+
+```cpp
+  float* vals = gesture.arg0_data();
+  std::fill(vals,vals+BATCH_SIZE*N*2,0.f);
+  float theta=0.f;
+  int idx=0;
+  for(int i=0;i<N;i++){
+    vals[idx++] = cos(theta);
+    vals[idx++] = sin(theta);
+    theta += i/(2*M_PI);
+  }
+  ...
+```
+ 
+#### Running the model
+
+```cpp
+  gesture.Run();
+  tensorflow::int64* data=gesture.result0_data();
+  std::cout<<"test "<<0<<" is "<<data[0]<<std::endl;
 ```
 
 #### BUILD rule
@@ -215,7 +254,15 @@ test 2 is 1
 ```
 which means (circle, misc, other) which is as is expected
 
-### Bonus
+## What about Android?
 
-To use Android, you need to setup WORKSPACE in your bazel root. Uncomment
-the examples.
+Instead of `main()` make a straight-C ABI function:
+```cpp
+extern "C"{
+	int classifyGesture(float* x, float* y){
+		...
+	}
+}
+```
+This is necessary because JNI can only call C functions.
+
