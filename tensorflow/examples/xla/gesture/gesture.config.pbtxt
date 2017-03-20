@@ -1,0 +1,18 @@
+# Each feed is a positional input argument for the generated function.  The order
+# of each entry matches the order of each input argument.  
+feed {
+  id { node_name: "features" }
+  shape {
+    dim { size: 256 }
+    dim { size: 32 }
+    dim { size: 2 }
+    
+  }
+}
+
+# Each fetch is a positional output argument for the generated function.  The order
+# of each entry matches the order of each output argument.  Here “x_y_prod”
+# refers to the name of a matmul node defined in the graph.
+fetch {
+  id { node_name: "out_class" }
+}
