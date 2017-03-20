@@ -27,10 +27,9 @@ constexpr int N=32;
 int main(int argc, char** argv) {
   Eigen::ThreadPool tp(2);  // Size the thread pool as appropriate.
   Eigen::ThreadPoolDevice device(&tp, tp.NumThreads());
-
   Examples::Gesture gesture;
   gesture.set_thread_pool(&device);
-float* vals = gesture.arg0_data();
+  float* vals = gesture.arg0_data();
   std::fill(vals,vals+BATCH_SIZE*N*2,0.f);
   float theta=0.f;
   int idx=0;

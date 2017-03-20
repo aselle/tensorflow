@@ -77,7 +77,7 @@ def build_set():
 def viz(data, filename):
   """Build a set of data and vizualize it."""
   columns = 4
-  max_rows_to_display = 8
+  max_rows_to_display = 4
   rows = min(max_rows_to_display,len(data)/columns)
   idx = 0
   pylab.figure(figsize=(20,10))
@@ -210,7 +210,7 @@ def main(unused_argv):
   data_list = build_set()
   gesture = GestureModel(data_list)
   with tf.Session() as sess:
-    #viz(data_list, "examples.png")
+    viz(data_list, "examples.png")
     gesture.buildModel()
     if args.cmd == "train":
       gesture.trainModel(sess)

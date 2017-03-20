@@ -1,7 +1,8 @@
 load("//tensorflow/compiler/aot:tfcompile.bzl", "tf_library")
 
-package(default_visibility = ["//tensorflow:internal"])
+#package(default_visibility = ["//tensorflow:internal"])
 #package(default_visibility = ["//visibility:public"])
+package(default_visibility = ["//visibility:public"])
 
 
 py_binary(
