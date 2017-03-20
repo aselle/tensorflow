@@ -1,8 +1,20 @@
 load("//tensorflow/compiler/aot:tfcompile.bzl", "tf_library")
 
+package(default_visibility = ["//tensorflow:internal"])
+#package(default_visibility = ["//visibility:public"])
+
+
+py_binary(
+    name = "gesture",
+    srcs = ["gesture.py"],
+    deps = [
+      "//tensorflow:tensorflow_py"
+    ]
+)
+
 # Use the tf_library macro to compile your graph into executable code.
 tf_library(
-    name = "gesture",
+    name = "gesturelib",
     # cpp_class specifies the name of the generated C++ class, with namespaces allowed.
     # The class will be generated in the given namespace(s), or if no namespaces are
     # given, within the global namespace.
@@ -25,7 +37,7 @@ cc_binary(
       "gesture_simple.cc",  # include test_graph_tfmatmul.h to access the generated header
     ],
     deps = [
-      ":gesture",  # link in the generated object file
+      ":gesturelib",  # link in the generated object file
       "//third_party/eigen3",
     ],
     includes = [

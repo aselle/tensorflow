@@ -22,7 +22,8 @@ import random
 import matplotlib.pylab as pylab
 import numpy as np
 import tensorflow as tf
-
+from tensorflow.python.platform import app
+from tensorflow.python.platform import tf_logging as logging
 # Number of data points
 N=32
 # Number of examples to generate
@@ -201,7 +202,7 @@ class GestureModel:
 
 
 
-if __name__=="__main__":
+def main(unused_argv):
   parser = argparse.ArgumentParser(description="Train a naive gesture recognition model")
   parser.add_argument("cmd", type=str, help="the command, can be 'train' or 'eval'")
   args = parser.parse_args()
@@ -219,3 +220,7 @@ if __name__=="__main__":
       raise RuntimeError("Invalid cmd, must be train or eval")
     print("training accuracy: %f" % gesture.eval(sess, gesture.training_set))
     print("eval. accuracy:    %f" % gesture.eval(sess, gesture.eval_set))
+
+if __name__=="__main__":
+  app.run()
+      
