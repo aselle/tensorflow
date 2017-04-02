@@ -44,14 +44,14 @@ HIDDEN_SIZE = 20
 def char_rnn_model(features, target):
   """Character level recurrent neural network model to predict classes."""
   target = tf.one_hot(target, 15, 1, 0)
-  byte_list = tf.one_hot(features, 256, 1, 0)
+  byte_list = tf.cast(tf.one_hot(features, 256, 1, 0), dtype=tf.float32)
   byte_list = tf.unstack(byte_list, axis=1)
 
   cell = tf.contrib.rnn.GRUCell(HIDDEN_SIZE)
   _, encoding = tf.contrib.rnn.static_rnn(cell, byte_list, dtype=tf.float32)
 
   logits = tf.contrib.layers.fully_connected(encoding, 15, activation_fn=None)
-  loss = tf.contrib.losses.softmax_cross_entropy(logits, target)
+  loss = tf.contrib.losses.softmax_cross_entropy(logits=logits, onehot_labels=target)
 
   train_op = tf.contrib.layers.optimize_loss(
       loss,
