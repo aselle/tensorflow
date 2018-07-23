@@ -35,8 +35,11 @@ void SleepForSeconds(double sleep_seconds) {
   // If requested, sleep between runs for an arbitrary amount of time.
   // This can be helpful to determine the effect of mobile processor
   // scaling and thermal throttling.
-#ifdef PLATFORM_WINDOWS
+#if defined(PLATFORM_WINDOWS)
   Sleep(sleep_seconds * 1000);
+#elif defined(TFLITE_MCU)
+  fprintf(stderr, "MCU does not support SleepForSeconds\n");
+  exit(1);
 #else
   nanosleep(&req, nullptr);
 #endif
