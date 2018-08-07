@@ -39,13 +39,15 @@ class DummyTensor:
     self.dtype = x.dtype
   def get_shape(self):
     return (1,)
-sample_rate=  DummyTensor(sample_rate)
-
 
 # optimize graph
 def removeout(x): return x.split(":")[0]
-curr = optimize_for_inference_lib.optimize_for_inference(sess.graph_def, [removeout(input.name), removeout(sample_rate.name)], [removeout(labels.name)], tf.float32.as_datatype_enum, True)
+curr = optimize_for_inference_lib.optimize_for_inference(
+    sess.graph_def,[removeout(input.name), removeout(sample_rate.name)],
+    [removeout(labels.name)],
+    [tf.float32.as_datatype_enum, tf.int32.as_datatype_enum], True)
 # Convert and write the model
+sample_rate = DummyTensor(sample_rate)
 data = tf.contrib.lite.toco_convert(curr, [input, sample_rate], [labels], allow_custom_ops=True)
 open("conv.tflite","wb").write(data)
 # make sure it runs
@@ -54,6 +56,6 @@ foo.allocate_tensors()
 print foo.get_tensor(foo.get_input_details()[0]["index"]).shape
 foo.set_tensor(foo.get_input_details()[0]["index"], np.zeros((16000, 1), np.float32))
 print(foo.get_tensor(foo.get_input_details()[1]["index"]).shape)
-foo.set_tensor(foo.get_input_details()[1]["index"], np.array((44100,), np.float32))
+foo.set_tensor(foo.get_input_details()[1]["index"], np.array((44100,), np.int32))
 
 foo.invoke()
