@@ -19,20 +19,28 @@ from __future__ import print_function
 
 import sys
 import numpy as np
-from tensorflow.python.util.lazy_loader import LazyLoader
-from tensorflow.python.util.tf_export import tf_export as _tf_export
 
-# Lazy load since some of the performance benchmark skylark rules
-# break dependencies. Must use double quotes to match code internal rewrite
-# rule.
-# pylint: disable=g-inconsistent-quotes
-_interpreter_wrapper = LazyLoader(
-    "_interpreter_wrapper", globals(),
-    "tensorflow.lite.python.interpreter_wrapper."
-    "tensorflow_wrap_interpreter_wrapper")
-# pylint: enable=g-inconsistent-quotes
+try:
+  from tensorflow.python.util.tf_export import tf_export as _tf_export
+  from tensorflow.python.util.lazy_loader import LazyLoader
+  # Lazy load since some of the performance benchmark skylark rules
+  # break dependencies. Must use double quotes to match code internal rewrite
+  # rule.
+  # pylint: disable=g-inconsistent-quotes
+  _interpreter_wrapper = LazyLoader(
+      "_interpreter_wrapper", globals(),
+      "tensorflow.lite.python.interpreter_wrapper."
+      "tensorflow_wrap_interpreter_wrapper")
+  # pylint: enable=g-inconsistent-quotes
 
-del LazyLoader
+  del LazyLoader
+except ImportError:
+  # When full TensorFlow python is not available don't lazy load.
+  from tflite_runtime.lite.python import interpreter_wrapper as _interpreter_wrapper
+  def tf_export_dummy(*x, **kwargs):
+    return lambda x: x
+  _tf_export = tf_export_dummy
+
 
 
 @_tf_export('lite.Interpreter')
